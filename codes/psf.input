@@ -28,7 +28,7 @@ D) 4.0
 
 ## Size of rectangle where Gaussian is fitted. Defalut is 7 px:
 # NOTE: This has to do with pixscale, could change it to angle.
-D) 7
+E) 7
 
 ## Pixel saturation value. If not known "NONE":
 F) NONE
