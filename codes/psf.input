@@ -1,0 +1,38 @@
+# This file is a template for PSF fitting.
+# Complete all fields A to G.
+#
+# For field B, newline is "\n" and accepted delimiters are " ", "," and "\t"
+# (space, comma, tab).
+#
+# For field E, enter the fraction of the integrated radius at which Gaussian
+# fitting will take place.
+#
+# Massey and Davis suggest the following pairs of values for fitting radius
+# and PSF radius respectively: (3, 11) or (4, 13).
+#
+# Select isolated stars with no other sources in the vicinity, otherwise
+# the stacking might become biased.
+
+
+## Input map file. Enter path to input image:
+A) ../img/HATLASJ091331-003644_final_drz_sci.fits
+
+## Input star list coordinates file. Each star in new row, in (x,y) order:
+B) starlist.txt
+
+## Output PSF image filename. If default "NONE":
+C) NONE
+
+## Output noisemap image filename. If default "NONE":
+D) NONE
+
+## Gaussian fitting radius in SD units. Default is 3.0:
+E) 3.0
+
+## Maximum PSF radius in FWHM units. Default is 11.0:
+F) 11.0
+
+## Pixel saturation value. If not known "NONE":
+G) NONE
+
+# end
