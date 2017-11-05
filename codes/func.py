@@ -70,15 +70,15 @@ class fluxcount:
 
 
 def gaussian(A, x0, y0, s):
-    """Returns a gaussian function with the given parameters.
+    """Returns a symmetric gaussian function with the given parameters.
     """
     g = lambda x, y: A*np.exp(-( ((x0-x)/s)**2 + ((y0-y)/s)**2) /2)
     return g
 
 
 def moments(data):
-    """Returns (A, x0, y0, sx) the gaussian parameters of a 2D distribution by
-    calculating its moments.
+    """Returns (A, x0, y0, s) the gaussian parameters of a symmetric 2D
+    distribution by calculating its moments.
     """
     total = data.sum()
     X, Y = np.indices(data.shape)  # creates numbered mesh
@@ -99,8 +99,8 @@ def moments(data):
 
 
 def fitgaussian(data):
-    """Returns (A, x0, y0, s) the gaussian parameters of a 2D distribution
-    found by a fit.
+    """Returns (A, x0, y0, s) the gaussian parameters of a symmetric 2D
+    distribution found by a fit.
     """
     params = moments(data)
     errorf = lambda p: np.ravel(gaussian(*p)(*np.indices(data.shape)) - data)
