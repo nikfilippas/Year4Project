@@ -5,7 +5,6 @@ This script creates a subcatalogue of GAMA_DR1, extracting the following:
 Note: Only sources with a flux > 70 mJy are considered.
 """
 
-from __future__ import division
 import numpy as np
 
 # RA, Dec, F500, E500
