@@ -1,0 +1,19 @@
+# This file is a template for PSF fitting.
+# Complete all fields A to F. Leave whitespace between par index and par value.
+# For field B, newline is "\n" and accepted delimiter is whitespace.
+# Select isolated stars with no other sources in the vicinity, 
+# otherwise stacking might not work.
+# OTHER:
+# Massey and Davis suggest the following pairs of values for fitting radius
+# and PSF radius respectively: (3, 11) or (4, 13).
+# NOTE: (E) has to do with pixscale, could change it to angle.
+
+===============================================================================
+A) /img/HATLASJ091331-003644_final_drz_sci.fits        # Input map
+B) /img/starlist.txt                                   # Star coordinates 
+C) none                                                # Output PSF filename
+D) 4.0                                                 # Cutout size [px]
+E) 7                                                   # Gaussian fit size [px]
+F) none                                                # Saturation value
+
+===============================================================================
