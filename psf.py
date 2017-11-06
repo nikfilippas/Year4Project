@@ -1,6 +1,8 @@
 """
 This script calculates the point-spread function (PSF) of a FITS image using
 stars as point sources. The user is prompted to enter the path of the input.
+The input should be a file with information about the map and some approximate
+stellar coordinates on the map. Other parameters may also be used.
 It then proceeds as follows:
     1.  locates the stars and crops a large annulus around them
     2.  models the stellar profiles
@@ -32,6 +34,8 @@ for line in open(fitme):  # reads in file
 
 inmap, incoord, outmap, outrad, cutsize, satur = varlist  # unpacking
 
+# defines output filename of SCI with ADU flux
+ADUmap = re.split(" |_", inmap)[0] + "_ADU.fits"
 # defines PSF output filename
 if outmap == "none": outmap = re.split(" |_", inmap)[0] + "_psf.fits"
 # deals with saturation value
@@ -45,6 +49,7 @@ starcoords = np.loadtxt(incoord, skiprows=6)  # (x,y) coords of stars
 ## SKYMAP MANIPULATION ##
 hdulist = fits.open(inmap)  # loads fits file
 img = hdulist[0].data  # image data
+img /= hdulist[0].header["CCDGAIN"]  # converts e- to ADU
 w = WCS(hdulist[0].header)  # WCS information
 
 PSF = np.zeros((cutsize, cutsize))  # PSF array
@@ -88,4 +93,5 @@ for coord in starcoords:
 
 
 ## OUTPUT ##
-fits.writeto(outmap, PSF, overwrite=True)
+fits.writeto(ADUmap, img, overwrite=True)  # exports fits in ADU
+fits.writeto(outmap, PSF, overwrite=True)  # exports PSF

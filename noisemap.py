@@ -1,5 +1,6 @@
 """
 This script outputs the noisemap of an input FITS file.
+Input must be the SCI image of which the noise map is to be calculated.
 """
 
 import re
@@ -19,6 +20,7 @@ SD = clipval/gauss.interval(0.5)[1]  # IQR to SD conversion factor
 
 hdulist = fits.open(inmap)  # loads fits file
 img = hdulist[0].data  # image data
+img /= hdulist[0].header["CCDGAIN"]  # converts e- to ADU
 
 SDbounds = SD*np.nanpercentile(img, [25,75])  # +/- 1 SD bounds
 noise = img[(img > SDbounds[0]) & (img < SDbounds[1])].std()  # sky noise
