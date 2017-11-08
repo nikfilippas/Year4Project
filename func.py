@@ -4,6 +4,8 @@ Useful function definitions.
 
 import numpy as np
 from scipy.optimize import leastsq
+from astropy.io import fits
+from astropy.wcs import WCS
 
 
 class fluxcount:

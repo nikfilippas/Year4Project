@@ -1,0 +1,19 @@
+# This file is a template for PSF fitting.
+# Complete all fields A to H. Leave whitespace between par index and par value.
+# For fields A, B, insert the relative paths with respect to the `psf.py` file.
+# For field B, newline is "\n" and accepted delimiter is whitespace.
+# Select isolated stars with no other sources in the vicinity,
+# otherwise stacking might not work.
+
+===============================================================================
+A) files/HATLASJ091331-003644_final_drz_sci.fits     # Input map
+B) files/HATLASJ091331-003644.txt                    # Star coordinates
+C) none                                              # Output PSF filename
+D) none                                              # Output noisemap filename
+
+E) 4.0                                               # Cutout size [arcsec]
+F) 7                                                 # Gaussian fit size [px]
+G) 78000                                             # Saturation value
+H) 5                                                 # Noise clipping cutoff
+
+===============================================================================

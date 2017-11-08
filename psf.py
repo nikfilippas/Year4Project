@@ -14,6 +14,8 @@ It then proceeds as follows:
 
 import re
 import numpy as np
+from scipy.misc import imresize
+from scipy.stats import norm as gauss
 from astropy.io import fits
 from astropy.wcs import WCS
 from astropy.nddata import Cutout2D
@@ -31,27 +33,38 @@ for line in open(fitme):  # reads in file
         val = re.split(" ", line)[1]  # extracts parameter
         varlist.append(val)  # appends to varlist
 
-
-inmap, incoord, outmap, outrad, cutsize, satur = varlist  # unpacking
+# unpacking
+inmap, incoord, outmap, nmap, outrad, cutsize, satur, clipval = varlist
 
 # defines output filename of SCI with ADU flux
 ADUmap = re.split(" |_", inmap)[0] + "_ADU.fits"
-# defines PSF output filename
+# defines PSF and noisemap output filenames
 if outmap == "none": outmap = re.split(" |_", inmap)[0] + "_psf.fits"
+if nmap == "none": nmap = re.split(" |_", inmap)[0] + "_noisemap.fits"
 # deals with saturation value
 if satur == "none": satur = np.inf; print("Saturation value set to infinity.")
 
-outrad = float(outrad)
+outrad, satur, clipval = map(float, [outrad, satur, clipval])
 cutsize = int(cutsize)
 starcoords = np.loadtxt(incoord, skiprows=6)  # (x,y) coords of stars
 
 
-## SKYMAP MANIPULATION ##
-hdulist = fits.open(inmap)  # loads fits file
-img = hdulist[0].data  # image data
-img /= hdulist[0].header["CCDGAIN"]  # converts e- to ADU
-w = WCS(hdulist[0].header)  # WCS information
+## FILE IMPORT ##
+with fits.open(inmap) as hdulist:
+    img = hdulist[0].data  # image data
+    hdr = hdulist[0].header  # image header
+    w = WCS(hdulist[0].header)  # WCS object
+    img /= hdr["CCDGAIN"]  # converts e- to ADU
 
+
+## NOISEMAP EXTRACTION ##
+SD = clipval/gauss.interval(0.5)[1]  # IQR to SD conversion factor
+SDbounds = SD*np.nanpercentile(img, [25,75])  # +/- 1 SD bounds
+noise = img[(img > SDbounds[0]) & (img < SDbounds[1])].std()  # sky noise
+NOISE = np.sqrt(noise**2 + img)  # total noise
+
+
+## SKYMAP MANIPULATION ##
 PSF = np.zeros((cutsize, cutsize))  # PSF array
 for coord in starcoords:
     try:
@@ -91,7 +104,9 @@ for coord in starcoords:
 
         PSF += star  # stacks star onto PSF
 
+PSF = imresize(PSF, 10., interp="bicubic")
 
 ## OUTPUT ##
-fits.writeto(ADUmap, img, overwrite=True)  # exports fits in ADU
+fits.writeto(ADUmap, img, hdr, overwrite=True)  # exports fits in ADU
 fits.writeto(outmap, PSF, overwrite=True)  # exports PSF
+fits.writeto(nmap, NOISE, hdr, overwrite=True)  # exports noisemap
