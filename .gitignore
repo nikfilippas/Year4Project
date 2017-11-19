@@ -1,6 +1,9 @@
+# Directories
 __pycache__/
 cats/
 codes/
 files/
+
+# Files
 todo.txt
 
