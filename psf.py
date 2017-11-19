@@ -14,7 +14,7 @@ It then proceeds as follows:
 
 import re
 import numpy as np
-from scipy.misc import imresize
+from scipy.ndimage import shift
 from scipy.stats import norm as gauss
 from astropy.io import fits
 from astropy.wcs import WCS
@@ -66,6 +66,7 @@ NOISE = np.sqrt(noise**2 + img)  # total noise
 
 ## SKYMAP MANIPULATION ##
 PSF = np.zeros((cutsize, cutsize))  # PSF array
+cmax = 0  # maximum offset from centre
 for coord in starcoords:
     try:
         # creates cutout object from original image
@@ -82,29 +83,19 @@ for coord in starcoords:
                 maxpos[1]-cutsize//2 : maxpos[1]+cutsize//2 + 1
                 ]
 
-    if not np.max(star) == satur:  # checks for saturated pixels
-        centroid = func.fitgaussian(star)[1:3].round()  # centroid (x,y) coords
-        # vector to new centroid
-        coord_diff = centroid - np.repeat(cutsize//2, 2)
-
-        if coord_diff.any():  # checks if centroid is different to guess
-            upd_coord = coord + coord_diff  # new centroid
-            # creates new cutour object from original image
-            star = Cutout2D(
-                            img, upd_coord,
-                            2*outrad*u.arcsec, wcs=w,
-                            mode="strict"
-                            )
-            star = star.data  # extracts data from cutout
-            # crops a box around the coords of the peak
-            star = star[
-                maxpos[0]-cutsize//2 : maxpos[0]+cutsize//2 + 1,
-                maxpos[1]-cutsize//2 : maxpos[1]+cutsize//2 + 1
-                ]
-
+    if not star.max() == satur:  # checks for saturated pixels
+        centroid = func.fitgaussian(star)[1:3] + 1  # centroid (x,y) coords
+        # vector to new centroid (rows increase downwards)
+        cdiff = np.repeat((cutsize+1)//2, 2) - centroid
+        star = shift(star, cdiff)  # shifts to new centre
         PSF += star  # stacks star onto PSF
 
-PSF = imresize(PSF, 10., interp="bicubic")
+        # stores maximum pixel offset
+        cmax = np.max((cmax, np.abs(cdiff).max()))
+
+cmax = int(np.ceil(cmax))
+PSF = PSF[cmax:-cmax, cmax:-cmax]  # crops out shifted edges
+
 
 ## OUTPUT ##
 fits.writeto(ADUmap, img, hdr, overwrite=True)  # exports fits in ADU

@@ -12,7 +12,7 @@ C) none                                              # Output PSF filename
 D) none                                              # Output noisemap filename
 
 E) 4.0                                               # Cutout size [arcsec]
-F) 7                                                 # Gaussian fit size [px]
+F) 11                                                # Gaussian fit size [px]
 G) 78000                                             # Saturation value
 H) 5                                                 # Noise clipping cutoff
 
