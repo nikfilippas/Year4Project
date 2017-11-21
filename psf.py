@@ -98,6 +98,6 @@ PSF = PSF[cmax:-cmax, cmax:-cmax]  # crops out shifted edges
 
 
 ## OUTPUT ##
-fits.writeto(ADUmap, img, hdr, overwrite=True)  # exports fits in ADU
 fits.writeto(outmap, PSF, overwrite=True)  # exports PSF
+fits.writeto(ADUmap, img, hdr, overwrite=True)  # exports fits in ADU
 fits.writeto(nmap, NOISE, hdr, overwrite=True)  # exports noisemap

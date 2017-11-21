@@ -4,6 +4,7 @@ Useful function definitions.
 
 import numpy as np
 from scipy.optimize import leastsq
+from matplotlib.path import Path
 
 
 def gaussian(A, x0, y0, s):
@@ -43,3 +44,22 @@ def fitgaussian(data):
     errorf = lambda p: np.ravel(gaussian(*p)(*np.indices(data.shape)) - data)
     p, success = leastsq(errorf, params)
     return p
+
+
+def polymask(img, verts):
+    """Masks the points within the given polygon vertices and returns the
+    masked image. Vertices should be given in (x,y) format.
+    """
+    ny, nx = img.shape
+
+    # Creates vertex coordinates for each grid cell
+    x, y = np.meshgrid(np.arange(1, nx+1), np.arange(1, ny+1))
+    x, y = x.flatten(), y.flatten()
+    points = np.vstack((x, y)).T
+
+    path = Path(verts)  # path object (polygon)
+    grid = path.contains_points(points)
+    grid = grid.reshape((nx, ny))
+    grid = grid.astype(int)  # integer booleans
+
+    return grid
