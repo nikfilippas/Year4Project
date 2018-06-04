@@ -28,10 +28,11 @@ import func
 fitme = input("Enter the path to the input file:\n")
 
 varlist = []
-for line in open(fitme):  # reads in file
-    if not line.startswith(("\n", "#", "=")):  # disregards decorative lines
-        val = re.split(" ", line)[1]  # extracts parameter
-        varlist.append(val)  # appends to varlist
+with open(fitme) as f:
+    for line in f:  # reads in file
+        if not line.startswith(("\n", "#", "=")):  # disregards comments
+            val = re.split(" ", line)[1]  # extracts parameter
+            varlist.append(val)  # appends to varlist
 
 # unpacking
 inmap, incoord, outmap, nmap, outrad, cutsize, satur, clipval = varlist
@@ -47,6 +48,7 @@ if satur == "none": satur = np.inf; print("Saturation value set to infinity.")
 outrad, satur, clipval = map(float, [outrad, satur, clipval])
 cutsize = int(cutsize)
 starcoords = np.loadtxt(incoord, skiprows=6)  # (x,y) coords of stars
+starcoords = np.reshape(starcoords, (-1, 2))  # ensures 2d array for retrieval
 
 
 ## FILE IMPORT ##
